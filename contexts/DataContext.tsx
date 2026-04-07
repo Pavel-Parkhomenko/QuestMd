@@ -1,4 +1,5 @@
 // contexts/DataContext.tsx
+import { shuffleArray } from "@/helpers/getdata";
 import { IExercise } from "@/types";
 import React, {
   createContext,
@@ -14,6 +15,7 @@ interface DataContextType {
   loadData: () => Promise<void>;
   reloadData: () => Promise<void>;
   getDataByName: (name: string) => IExercise[] | [];
+  getAllData: () => IExercise[] | [];
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -78,6 +80,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return dataMap.get(name) || [];
   }
 
+  function getAllData() {
+    const merged: IExercise[] = [...dataMap.values()].flat();
+    const shuffled = shuffleArray(merged);
+    return shuffled;
+  }
+
   // Загружаем данные при старте
   useEffect(() => {
     loadData();
@@ -85,7 +93,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   return (
     <DataContext.Provider
-      value={{ loading, error, loadData, reloadData, getDataByName }}
+      value={{
+        loading,
+        error,
+        loadData,
+        reloadData,
+        getDataByName,
+        getAllData,
+      }}
     >
       {children}
     </DataContext.Provider>

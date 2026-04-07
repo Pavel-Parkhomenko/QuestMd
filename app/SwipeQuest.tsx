@@ -1,5 +1,6 @@
 import { useData } from "@/contexts/DataContext";
-import { useRef, useState } from "react";
+import { IExercise } from "@/types";
+import { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { CardQuest } from "../components/CardQuest";
 
@@ -7,9 +8,13 @@ export default function SwipeCards() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  const { loading, error } = useData();
+  const { loading, error, getAllData } = useData();
   const [isCardAnswer, setIsCardAnswer] = useState(false);
-  const [exercises, setExercises] = useState([]);
+  const [exercises, setExercises] = useState<IExercise[]>([]);
+
+  useEffect(() => {
+    setExercises(getAllData());
+  }, [getAllData]);
 
   if (loading) {
     return (
@@ -37,40 +42,13 @@ export default function SwipeCards() {
 
   const handleSwipeUp = () => {
     setIsCardAnswer(true);
-    // if (currentIndex < exercises.length - 1) {
-    //   Animated.timing(fadeAnim, {
-    //     toValue: 0,
-    //     duration: 200,
-    //     useNativeDriver: true,
-    //   }).start(() => {
-    //     // setCurrentIndex(currentIndex + 1);
-    //     setIsCardAnswer(true);
-    //     Animated.timing(fadeAnim, {
-    //       toValue: 1,
-    //       duration: 200,
-    //       useNativeDriver: true,
-    //     }).start();
-    //   });
-    // }
+    console.log("up", currentIndex);
   };
 
   const handleSwipeHor = () => {
     setIsCardAnswer(false);
-    // if (currentIndex < exercises.length - 1) {
-    //   Animated.timing(fadeAnim, {
-    //     toValue: 0,
-    //     duration: 200,
-    //     useNativeDriver: true,
-    //   }).start(() => {
-    //     setCurrentIndex(currentIndex + 1);
-    //     setIsCardAnswer(false);
-    //     Animated.timing(fadeAnim, {
-    //       toValue: 1,
-    //       duration: 200,
-    //       useNativeDriver: true,
-    //     }).start();
-    //   });
-    // }
+    setCurrentIndex((prevInd) => prevInd + 1);
+    console.log("hor", currentIndex);
   };
 
   if (currentIndex >= exercises.length) {
@@ -85,8 +63,8 @@ export default function SwipeCards() {
     <View style={styles.container}>
       <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
         <CardQuest
-          quest={exercises[currentIndex]}
-          answer={exercises[currentIndex]}
+          quest={exercises[currentIndex].quest}
+          answer={exercises[currentIndex].answer}
           onSwipeUp={handleSwipeUp}
           onSwipeHor={handleSwipeHor}
           isCardAnswer={isCardAnswer}

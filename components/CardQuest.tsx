@@ -114,7 +114,6 @@ export function CardQuest({
   ).current;
 
   if (isCardAnswer) {
-    console.log("isCardAnswer", isCardAnswer);
     return (
       <Animated.View
         {...panResponderHor.panHandlers}
