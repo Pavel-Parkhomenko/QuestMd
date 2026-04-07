@@ -3,12 +3,15 @@ export interface IExercise {
   answer: string;
 }
 
-export interface CardProps {
+export interface ICardQuestProps {
   quest: string;
-  answer: string;
   onSwipeUp?: () => void;
+}
+
+export interface ICardAnswerProps {
+  answer: string;
+  quest: string;
   onSwipeHor?: () => void;
-  isCardAnswer: boolean;
 }
 
 export interface ISwipeCardsProps {

@@ -1,12 +1,12 @@
+import { CardAnswer } from "@/components/CardAnswer";
 import { useData } from "@/contexts/DataContext";
 import { IExercise } from "@/types";
-import { useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { CardQuest } from "../components/CardQuest";
 
 export default function SwipeCards() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const { loading, error, getAllData } = useData();
   const [isCardAnswer, setIsCardAnswer] = useState(false);
@@ -59,17 +59,24 @@ export default function SwipeCards() {
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
-        <CardQuest
+  if (isCardAnswer) {
+    return (
+      <View style={styles.container}>
+        <CardAnswer
           quest={exercises[currentIndex].quest}
           answer={exercises[currentIndex].answer}
-          onSwipeUp={handleSwipeUp}
           onSwipeHor={handleSwipeHor}
-          isCardAnswer={isCardAnswer}
         />
-      </Animated.View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <CardQuest
+        quest={exercises[currentIndex].quest}
+        onSwipeUp={handleSwipeUp}
+      />
     </View>
   );
 }
@@ -79,25 +86,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#3e3344",
+    backgroundColor: "#151b23",
   },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  text: {
-    marginTop: 10,
-    fontSize: 16,
-  },
-  error: {
-    color: "red",
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  button: {
-    color: "#6200ee",
-    fontSize: 16,
-    textDecorationLine: "underline",
   },
 });
