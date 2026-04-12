@@ -5,15 +5,20 @@ export interface IExercise {
 
 export interface ICardQuestProps {
   quest: string;
-  onSwipeUp?: () => void;
+  showAnswer: () => void;
 }
 
 export interface ICardAnswerProps {
   answer: string;
   quest: string;
-  onSwipeHor?: () => void;
+  showQuest: () => void;
 }
 
 export interface ISwipeCardsProps {
   cards: string[];
+}
+
+export interface IListData {
+  name: string;
+  exercises: IExercise[];
 }

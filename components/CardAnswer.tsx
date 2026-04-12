@@ -1,84 +1,63 @@
 // components/Card.tsx
 import { ICardAnswerProps } from "@/types";
-import React, { useRef, useState } from "react";
+import React from "react";
 import {
-  Animated,
   Dimensions,
-  PanResponder,
+  Linking,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 import { Markdown } from "react-native-remark";
+// import Markdown from "react-native-markdown-display";
+// import MarkdownWebView from "react-native-github-markdown";
 
 const { width, height } = Dimensions.get("window");
 
-export function CardAnswer({ answer, quest, onSwipeHor }: ICardAnswerProps) {
-  const panX = useRef(new Animated.Value(0)).current;
-  const [isSwiping, setIsSwiping] = useState(false);
-
-  const SWIPE_HORIZONTAL = 150;
-
-  const panResponderHor = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        setIsSwiping(true);
-      },
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dx < 0 && !isSwiping) {
-          panX.setValue(gesture.dx);
-        } else if (gesture.dx < 0) {
-          panX.setValue(gesture.dx);
-        }
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dx < -SWIPE_HORIZONTAL) {
-          Animated.timing(panX, {
-            toValue: -width,
-            duration: 300,
-            useNativeDriver: true,
-          }).start(() => {
-            panX.setValue(0);
-            setIsSwiping(false);
-            onSwipeHor?.();
-          });
-        } else if (gesture.dx > SWIPE_HORIZONTAL) {
-          Animated.timing(panX, {
-            toValue: width,
-            duration: 300,
-            useNativeDriver: true,
-          }).start(() => {
-            panX.setValue(0);
-            setIsSwiping(false);
-            onSwipeHor?.();
-          });
-        } else {
-          Animated.spring(panX, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start(() => {
-            setIsSwiping(false);
-          });
-        }
-      },
-    }),
-  ).current;
-
+export function CardAnswer({ answer, quest, showQuest }: ICardAnswerProps) {
   return (
-    <Animated.View
-      {...panResponderHor.panHandlers}
-      style={[styles.card, { transform: [{ translateX: panX }] }]}
-    >
+    <View style={[styles.card]}>
       <View>
         <Text style={styles.text}>{quest}</Text>
         <View style={styles.answer}>
-          <Markdown markdown={answer} />
+          <Markdown
+            markdown={answer}
+            customRenderers={{
+              // Override default renderers for mdast nodes.
+              // Checkout https://github.com/imwithye/react-native-remark/blob/main/src/renderers/index.tsx
+              // for the default renderers.
+              InlineCodeRenderer: ({ node }) => (
+                <Text style={{ color: "blue" }}>{node.value}</Text>
+              ),
+              ThematicBreakRenderer: () => (
+                <View style={{ height: 5, backgroundColor: "red" }} />
+              ),
+            }}
+            customStyles={{
+              // Override default styles
+              // Checkout https://github.com/imwithye/react-native-remark/blob/main/src/themes/default.tsx
+              // for the default styles.
+              inlineCode: {
+                color: "red",
+              },
+              text: {
+                color: "red",
+              },
+            }}
+            onLinkPress={(url) => Linking.openURL(url)}
+          />
+          {/* <Text>{answer}</Text> */}
         </View>
       </View>
-    </Animated.View>
+      <TouchableOpacity
+        onPress={() => showQuest()}
+        style={{ backgroundColor: "blue", padding: 10, borderRadius: 5 }}
+      >
+        <Text style={{ color: "white", fontSize: 16 }}>Новый вопрос</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 

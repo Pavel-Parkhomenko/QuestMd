@@ -13,7 +13,7 @@ export default function SwipeCards() {
   const [exercises, setExercises] = useState<IExercise[]>([]);
 
   useEffect(() => {
-    setExercises(getAllData());
+    setExercises([...getAllData()]);
   }, [getAllData]);
 
   if (loading) {
@@ -40,7 +40,7 @@ export default function SwipeCards() {
     );
   }
 
-  const handleSwipeUp = () => {
+  const handleShowAnswer = () => {
     setIsCardAnswer(true);
     console.log("up", currentIndex);
   };
@@ -65,7 +65,7 @@ export default function SwipeCards() {
         <CardAnswer
           quest={exercises[currentIndex].quest}
           answer={exercises[currentIndex].answer}
-          onSwipeHor={handleSwipeHor}
+          showQuest={handleSwipeHor}
         />
       </View>
     );
@@ -75,7 +75,7 @@ export default function SwipeCards() {
     <View style={styles.container}>
       <CardQuest
         quest={exercises[currentIndex].quest}
-        onSwipeUp={handleSwipeUp}
+        showAnswer={handleShowAnswer}
       />
     </View>
   );

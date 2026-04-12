@@ -1,106 +1,70 @@
-// components/Card.tsx
 import { ICardQuestProps } from "@/types";
-import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
-import {
-  Animated,
-  Dimensions,
-  PanResponder,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React from "react";
+import { Animated, StyleSheet, Text, TouchableOpacity } from "react-native";
 
-const { width, height } = Dimensions.get("window");
-
-export function CardQuest({ quest, onSwipeUp }: ICardQuestProps) {
-  const panY = useRef(new Animated.Value(0)).current;
-  const [isSwiping, setIsSwiping] = useState(false);
-
-  const SWIPE_VERTICAL = 150;
-
-  const panResponderVer = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        setIsSwiping(true);
-      },
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dy < 0 && !isSwiping) {
-          panY.setValue(gesture.dy);
-        } else if (gesture.dy < 0) {
-          panY.setValue(gesture.dy);
-        }
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy < -SWIPE_VERTICAL) {
-          Animated.timing(panY, {
-            toValue: -height,
-            duration: 300,
-            useNativeDriver: true,
-          }).start(() => {
-            panY.setValue(0);
-            setIsSwiping(false);
-            onSwipeUp?.();
-          });
-        } else {
-          // Возвращаем на место
-          Animated.spring(panY, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start(() => {
-            setIsSwiping(false);
-          });
-        }
-      },
-    }),
-  ).current;
-
+export function CardQuest({ quest, showAnswer }: ICardQuestProps) {
   return (
-    <Animated.View
-      {...panResponderVer.panHandlers}
-      style={[
-        styles.card,
-        {
-          transform: [{ translateY: panY }],
-        },
-      ]}
-    >
-      <Text style={styles.text}>{quest}</Text>
-      <View style={styles.arrowContainer}>
-        <Ionicons name="chevron-up-outline" size={32} color="#999" />
-        <Text style={styles.swipeHint}>Показать ответ</Text>
-      </View>
+    <Animated.View style={[styles.container]}>
+      <Animated.View style={[styles.questionContainer]}>
+        <Animated.Text style={[styles.questionText]}>{quest}</Animated.Text>
+      </Animated.View>
+
+      <TouchableOpacity
+        onPress={() => showAnswer()}
+        style={{ backgroundColor: "blue", padding: 10, borderRadius: 5 }}
+      >
+        <Text style={{ color: "white", fontSize: 16 }}>Ответ</Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    width: width - 40,
-    height: height - 130,
-    backgroundColor: "#0d1117",
-    borderRadius: 20,
-    justifyContent: "center",
+  container: {
+    flex: 1,
     alignItems: "center",
-    position: "relative",
-    color: "white",
+    width: "100%",
   },
-  text: {
+  questionContainer: {
+    marginTop: 130,
+    width: "80%",
+    backgroundColor: "#fff",
+    padding: 30,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1,
+  },
+  questionText: {
     fontSize: 24,
     textAlign: "center",
+    color: "#333",
+    fontWeight: "600",
+  },
+  answerContainer: {
+    width: "96%",
+    backgroundColor: "#4CAF50",
     padding: 20,
-    color: "white",
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  arrowContainer: {
-    position: "absolute",
-    bottom: 20,
-    alignItems: "center",
-  },
-  swipeHint: {
-    fontSize: 12,
-    color: "#e41a1a",
-    marginTop: 5,
+  answerText: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "#fff",
+    lineHeight: 24,
   },
 });

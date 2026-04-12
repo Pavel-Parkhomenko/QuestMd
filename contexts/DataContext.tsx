@@ -16,6 +16,7 @@ interface DataContextType {
   reloadData: () => Promise<void>;
   getDataByName: (name: string) => IExercise[] | [];
   getAllData: () => IExercise[] | [];
+  getMapData: () => Map<string, IExercise[]>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -31,12 +32,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3000/get-files");
+      const response = await fetch("http://192.168.0.103:3000/get-files");
       const names = await response.json();
 
       let urls: string[] = [];
       names.map((name: string) =>
-        urls.push(`http://localhost:3000/get-file/${encodeURIComponent(name)}`),
+        urls.push(
+          `http://192.168.0.103:3000/get-file/${encodeURIComponent(name)}`,
+        ),
       );
 
       const responses = await Promise.allSettled(urls.map((url) => fetch(url)));
@@ -56,8 +59,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
           console.error("Запрос не выполнен:", response.reason);
         }
       }
-
-      console.log(dataMap);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ошибка загрузки");
     } finally {
@@ -86,6 +87,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return shuffled;
   }
 
+  function getMapData() {
+    return dataMap;
+  }
+
   // Загружаем данные при старте
   useEffect(() => {
     loadData();
@@ -100,6 +105,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         reloadData,
         getDataByName,
         getAllData,
+        getMapData,
       }}
     >
       {children}
